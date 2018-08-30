@@ -383,7 +383,7 @@ function deleteRoom(roomName) {
   firebase.database().ref("messages/" + roomName).remove();
 
   // TODO: 初期ルームに移動
-  location.hash = "#" + defaultRoomName;
+  showRoom(defaultRoomName);
 }
 
 
