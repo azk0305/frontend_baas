@@ -377,10 +377,13 @@ function deleteRoom(roomName) {
   }
 
   // TODO: ルームを削除
+  firebase.database().ref("rooms/" + roomName).remove();
 
   // TODO: ルーム内のメッセージも削除
+  firebase.database().ref("messages/" + roomName).remove();
 
   // TODO: 初期ルームに移動
+  location.hash = "#" + defaultRoomName;
 }
 
 
@@ -477,6 +480,18 @@ $(document).ready(function() {
     var password = $("#login-password").val();
 
     // TODO: ログインを試みて該当ユーザが存在しない場合は新規作成する
+    // まずはログインを試みる
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+      console.log("ログイン失敗:", error);
+      if (error.code === "auth/user-not-found") {
+        // 該当ユーザが存在しない場合は新規作成する
+        firebase.auth().createUserWithEmailAndPassword(email, password).then(function() { // 作成成功
+          console.log("ユーザを作成しました");
+        }).catch(function(error) { // 作成失敗
+          console.error("ユーザ作成に失敗:", error);
+        });
+      }
+    });
 
     return false;
   });
@@ -512,6 +527,12 @@ $(document).ready(function() {
     $text.val("");
 
     // TODO: メッセージを投稿する
+    var message = {
+      uid: currentUID,
+      text: comment,
+      time: firebase.database.ServerValue.TIMESTAMP,
+    };
+    firebase.database().ref().child("messages/" + currentRoomName).push(message);
 
     return false;
   });
@@ -605,12 +626,21 @@ $(document).ready(function() {
     }
 
     // TODO: ルーム作成処理
-    
-    // TODO: ルーム作成に成功した場合は以下2つの処理を実行する
-    // モーダルを非表示にする
-    $("#createRoomModal").modal("toggle");
-    // 作成したルームを表示
-    showRoom(roomName);
+    // priorityを2にすることで初期ルーム（priority=1）より順番的に後になる
+    firebase.database().ref("rooms/" + roomName).setWithPriority({
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      createdByUID: currentUID,
+    }, 2)
+    .then(function() {
+      // TODO: ルーム作成に成功した場合は以下2つの処理を実行する
+      // モーダルを非表示にする
+      $("#createRoomModal").modal("toggle");
+      // 作成したルームを表示
+      showRoom(roomName);
+    })
+    .catch(function(error) {
+      console.error("ルーム作成に失敗:", error);
+    });
 
     return false;
   });
