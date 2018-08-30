@@ -274,7 +274,7 @@ function createMessageDiv(messageId, message) {
 // DateオブジェクトをHTMLにフォーマットして返す
 function formatDate(date) {
   var m = moment(date);
-  return m.format("M/D") + "&nbsp;&nbsp;" + m.format("H:mm");
+  return m.format("YYYY/MM/DD") + "&nbsp;&nbsp;" + m.format("HH:mm:ss");
 }
 
 // ルームを表示する。location.hashを変更することで
