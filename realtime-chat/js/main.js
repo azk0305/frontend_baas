@@ -1,5 +1,5 @@
 /* jshint curly:true, debug:true */
-/* globals $, firebase, location */
+/* globals $, firebase, location, moment */
 
 // プロフィール画像を設定していないユーザのデフォルト画像
 var defaultProfileImageURL = "img/default-profile-image.png";
@@ -63,89 +63,10 @@ function onLogout() {
   showView("login");
 }
 
-// ユーザ作成のときパスワードが弱すぎる場合に呼ばれる
-function onWeakPassword () {
-  resetLoginForm();
-  $(".login__password").addClass("has-error");
-  $(".login__help").text("6文字以上のパスワードを入力してください").fadeIn();
-}
-
-// ログインのときパスワードが間違っている場合に呼ばれる
-function onWrongPassword() {
-  resetLoginForm();
-  $(".login__password").addClass("has-error");
-  $(".login__help").text("正しいパスワードを入力してください").fadeIn();
-}
-
-// ログインのとき試行回数が多すぎてブロックされている場合に呼ばれる
-function onTooManyRequests() {
-  resetLoginForm();
-  $(".login__submit-button").attr("disabled", "disabled");
-  $(".login__help").text("試行回数が多すぎます。後ほどお試しください。").fadeIn();
-}
-
-// ログインのときメールアドレスの形式が正しくない場合に呼ばれる
-function onInvalidEmail() {
-  resetLoginForm();
-  $(".login__email").addClass("has-error");
-  $(".login__help").text("メールアドレスを正しく入力してください").fadeIn();
-}
-
-// その他のログインエラーの場合に呼ばれる
-function onOtherLoginError(error) {
-  resetLoginForm();
-  $(".login__help").text("エラー：" + error.message).fadeIn();
-}
-
 
 /**
  * チャット画面関連の関数
  */
-
-// チャット画面表示用のデータが揃った時に呼ばれる
-function showCurrentRoom() {
-  if (currentRoomName) {
-    if (!dbdata.rooms[currentRoomName]) {
-      // 現在いるルームが削除されたため初期ルームに移動
-      showRoom(defaultRoomName);
-    }
-  } else { // ページロード直後の場合
-    if (location.hash) { // URLの#以降がある場合はそのルームを表示
-      var roomName = decodeURIComponent(location.hash.substring(1));
-      if (dbdata.rooms[roomName]) {
-        _showRoom(roomName);
-      } else { // ルームが存在しないので初期ルームを表示
-        showRoom(defaultRoomName);
-      }
-    } else { // #指定がないので初期ルームを表示
-      showRoom(defaultRoomName);
-    }
-  }
-}
-
-// チャットビュー内のユーザ情報をクリア
-function resetChatView() {
-  // メッセージ一覧を消去
-  clearMessages();
-
-  // ナビゲーションバーの情報を消去
-  clearNavbar();
-
-  // ユーザ情報設定モーダルのプレビュー画像を消去
-  $(".settings-profile-image-preview").attr({
-    src: defaultProfileImageURL,
-  });
-}
-
-// ナビゲーションバーの情報を消去
-function clearNavbar() {
-  $(".room-list-menu").text("ルーム");
-  $(".menu-profile-name").text("");
-  $(".menu-profile-image").attr({
-    src: defaultProfileImageURL,
-  });
-  clearRoomList();
-}
 
 // チャット画面の初期化処理
 function loadChatView() {
@@ -224,6 +145,51 @@ function loadChatView() {
   });
 }
 
+// チャット画面表示用のデータが揃った時に呼ばれる
+function showCurrentRoom() {
+  if (currentRoomName) {
+    if (!dbdata.rooms[currentRoomName]) {
+      // 現在いるルームが削除されたため初期ルームに移動
+      showRoom(defaultRoomName);
+    }
+  } else { // ページロード直後の場合
+    if (location.hash) { // URLの#以降がある場合はそのルームを表示
+      var roomName = decodeURIComponent(location.hash.substring(1));
+      if (dbdata.rooms[roomName]) {
+        _showRoom(roomName);
+      } else { // ルームが存在しないので初期ルームを表示
+        showRoom(defaultRoomName);
+      }
+    } else { // #指定がないので初期ルームを表示
+      showRoom(defaultRoomName);
+    }
+  }
+}
+
+// チャットビュー内のユーザ情報をクリア
+function resetChatView() {
+  // メッセージ一覧を消去
+  clearMessages();
+
+  // ナビゲーションバーの情報を消去
+  clearNavbar();
+
+  // ユーザ情報設定モーダルのプレビュー画像を消去
+  $(".settings-profile-image-preview").attr({
+    src: defaultProfileImageURL,
+  });
+}
+
+// ナビゲーションバーの情報を消去
+function clearNavbar() {
+  $(".room-list-menu").text("ルーム");
+  $(".menu-profile-name").text("");
+  $(".menu-profile-image").attr({
+    src: defaultProfileImageURL,
+  });
+  clearRoomList();
+}
+
 // 動的に追加されたルームを一旦削除する
 function clearRoomList() {
   $(".room-list").find(".room-list-dynamic").remove();
@@ -236,16 +202,16 @@ function showRoomList(roomsSnapshot) {
 
   roomsSnapshot.forEach(function(roomSnapshot) {
     var roomName = roomSnapshot.key;
-    $a = $("<a>", {
+    var roomListLink = $("<a>", {
       href: "#" + roomName,
       class: "room-list__link",
     }).text(roomName);
     $(".room-list").append(
       $("<li>", {
         class: "room-list-dynamic",
-      }).append($a)
+      }).append(roomListLink)
     );
-    $a.click(function() {
+    roomListLink.click(function() {
       // ハンバーガーメニューが開いている場合は閉じる
       $("#navbar").collapse("hide");
     });
@@ -265,8 +231,8 @@ function setMessageListMinHeight() {
 
 // messageを表示する
 function addMessage(messageId, message) {
-  $div = createMessageDiv(messageId, message);
-  $div.appendTo(".message-list");
+  var divTag = createMessageDiv(messageId, message);
+  divTag.appendTo(".message-list");
 
   // 一番下までスクロール 
   $("html, body").scrollTop($(document).height());
@@ -275,44 +241,40 @@ function addMessage(messageId, message) {
 // messageの表示用のdiv（jQueryオブジェクト）を作って返す
 function createMessageDiv(messageId, message) {
   // HTML内のテンプレートからコピーを作成
+  var divTag = null;
   if (message.uid === currentUID) { // 送信メッセージ
-    $div = $(".message-template .message--sent").clone();
+    divTag = $(".message-template .message--sent").clone();
   } else { // 受信メッセージ
-    $div = $(".message-template .message--received").clone();
+    divTag = $(".message-template .message--received").clone();
   }
 
   var user = dbdata.users[message.uid];
   if (user) { // ユーザが存在する場合
     // 投稿者ニックネーム
-    $div.find(".message__user-name").addClass("nickname-" + message.uid).text(user.nickname);
+    divTag.find(".message__user-name").addClass("nickname-" + message.uid).text(user.nickname);
     // 投稿者プロフィール画像
-    $div.find(".message__user-image").addClass("profile-image-" + message.uid);
+    divTag.find(".message__user-image").addClass("profile-image-" + message.uid);
     if (user.profileImageURL) { // プロフィール画像のURLを取得済みの場合
-      $div.find(".message__user-image").attr({
+      divTag.find(".message__user-image").attr({
         src: user.profileImageURL,
       });
     }
   }
   // メッセージ本文
-  $div.find(".message__text").text(message.text);
+  divTag.find(".message__text").text(message.text);
   // 投稿日
-  $div.find(".message__time").html(formatDate(new Date(message.time)));
+  divTag.find(".message__time").html(formatDate(new Date(message.time)));
 
   // id属性をセット
-  $div.attr("id", "message-id-" + messageId);
+  divTag.attr("id", "message-id-" + messageId);
 
-  return $div;
+  return divTag;
 }
 
 // DateオブジェクトをHTMLにフォーマットして返す
 function formatDate(date) {
   var m = moment(date);
   return m.format("M/D") + "&nbsp;&nbsp;" + m.format("H:mm");
-}
-
-// messageを投稿する
-function postMessage(message) {
-  firebase.database().ref().child("messages/" + currentRoomName).push(message);
 }
 
 // ルームを表示する。location.hashを変更することで
@@ -539,46 +501,6 @@ $(document).ready(function() {
 
 
   /**
-   * パスワードリセット関連
-   */
-
-  $("#passwordResetModal").on("show.bs.modal", function(event) {
-    // #passwordResetModalが表示される直前に実行する処理
-
-    // メールアドレスをログインフォームからコピー
-    $("#password-reset-email").val( $("#login-email").val() );
-
-    // モーダルの内容をリセット
-    $(".password-reset__help").hide();
-    $(".password-reset__submit-button").removeAttr("disabled");
-  });
-  $("#passwordResetModal").on("shown.bs.modal", function(event) {
-    // #passwordResetModalが表示された直後に実行する処理
-
-    // メールアドレスの欄にすぐ入力できる状態にする
-    $("#password-reset-email").focus();
-  });
-
-  // パスワードリセットフォームが送信されたらリセットを実行
-  $("#password-reset-form").submit(function() {
-    var email = $("#password-reset-email").val();
-    if (email) {
-      $(".password-reset__submit-button").attr("disabled", "disabled");
-      $(".password-reset__help").hide();
-      firebase.auth().sendPasswordResetEmail(email).then(function() {
-        $("#passwordResetModal").modal("toggle");
-        $("#passwordResetEmailSentModal").modal("toggle");
-      }).catch(function(error) {
-        $(".password-reset__help").text("エラー：" + error.message).fadeIn();
-        $(".password-reset__submit-button").removeAttr("disabled");
-      });
-    }
-
-    return false;
-  });
-
-
-  /**
    * ルーム作成関連
    */
 
@@ -589,7 +511,7 @@ $(document).ready(function() {
     resetCreateRoomModal();
   });
   $("#createRoomModal").on("shown.bs.modal", function(event) {
-    // createRoomModalが表示された直後に実行する処理
+    // #createRoomModalが表示された直後に実行する処理
 
     // ハンバーガーメニューが開いている場合は閉じる
     $("#navbar").collapse("hide");

@@ -39,49 +39,6 @@
       </div><!-- /.message -->
     </div>
 
-    <!-- パスワードリセットモーダル -->
-    <div class="modal fade" id="passwordResetModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <form id="password-reset-form">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">パスワードリセット</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group password-reset__email">
-                  <label for="password-reset-email" class="control-label">メールアドレスを入力してください</label>
-                  <input type="email" class="form-control" id="password-reset-email" required>
-                </div>
-                <div class="alert alert-danger password-reset__help"></div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-              <button type="submit" class="btn btn-primary password-reset__submit-button">メールを送信</button>
-            </div>
-          </form>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /#passwordResetModal -->
-
-    <!-- パスワードリセット メール送信完了モーダル -->
-    <div class="modal fade" id="passwordResetEmailSentModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">送信完了</h4>
-          </div>
-          <div class="modal-body">
-            メールを送信しました。メール内のリンクからパスワードをリセットしてください。
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#passwordResetEmailSentModal">OK</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /#passwordResetEmailSentModal -->
-
     <!-- ルーム作成モーダル -->
     <div class="modal fade" id="createRoomModal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -106,6 +63,25 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /#createRoomModal -->
+
+    <!-- ルーム削除モーダル -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">ルーム削除</h4>
+          </div>
+          <div class="modal-body">
+            <span class="delete-room__name"></span> を削除しますか？ ルーム内のすべてのメッセージも削除されます。
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+            <button type="button" class="btn btn-danger delete-room__button">削除</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /#deleteRoomModal -->
 
     <!-- ユーザ情報設定モーダル -->
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog">
@@ -138,25 +114,6 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /#settingsModal -->
-
-    <!-- ルーム削除モーダル -->
-    <div class="modal fade" id="deleteRoomModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">ルーム削除</h4>
-          </div>
-          <div class="modal-body">
-            <span class="delete-room__name"></span> を削除しますか？ ルーム内のすべてのメッセージも削除されます。
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-            <button type="button" class="btn btn-danger delete-room__button">削除</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /#deleteRoomModal -->
 
     <!-- 最初のローディング表示 -->
     <section id="loading" class="view">
