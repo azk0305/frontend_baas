@@ -142,6 +142,14 @@ body {
   color: #787878;
 }
 
+.message--received .message__body {
+  background-color: #e7e7e7;
+}
+
+.message--sent .message__body {
+  background-color: #d9f3d8;
+}
+
 .message--received .message__profile,
 .message--received .message__body {
   float: left;
@@ -187,7 +195,7 @@ body {
   content: " ";
   border-width: 10px 10px 0 0;
   border-style: solid;
-  border-color: #e7e7e7 transparent;
+  border-color: #d9f3d8 transparent;
 }
 
 .comment-form {
