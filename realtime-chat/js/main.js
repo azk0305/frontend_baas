@@ -605,7 +605,7 @@ $(document).ready(function() {
     }
 
     // TODO: ルーム作成処理
-
+    
     // TODO: ルーム作成に成功した場合は以下2つの処理を実行する
     // モーダルを非表示にする
     $("#createRoomModal").modal("toggle");
@@ -709,26 +709,24 @@ $(document).ready(function() {
 
     // ファイルアップロードを開始
     firebase.storage().ref("profile-images/" + currentUID).put(file, metadata).then(function(snapshot) {
-      // アップロード成功
-
-      // 画像表示用のURLを取得
-      var url = snapshot.metadata.downloadURLs[0];
-
-      // 画像のロードが終わったらローディング表示を消して画像を表示
-      $(".settings-profile-image-preview").load(function() {
-        $(".settings-profile-image-loading-container").css({
-          display: "none",
+      // アップロード成功したら画像表示用のURLを取得
+      firebase.storage().ref("profile-images/" + currentUID).getDownloadURL().then(function(url) {
+        // 画像のロードが終わったらローディング表示を消して画像を表示
+        $(".settings-profile-image-preview").load(function() {
+          $(".settings-profile-image-loading-container").css({
+            display: "none"
+          });
+          $(this).show();
         });
-        $(this).show();
-      });
-      $(".settings-profile-image-preview").attr({
-        src: url,
-      });
-
-      // ユーザ情報を更新
-      firebase.database().ref("users/" + currentUID).update({
-        profileImageLocation: "profile-images/" + currentUID,
-        updatedAt: firebase.database.ServerValue.TIMESTAMP,
+        $(".settings-profile-image-preview").attr({
+          src: url
+        });
+  
+        // ユーザ情報を更新
+        firebase.database().ref("users/" + currentUID).update({
+          profileImageLocation: "profile-images/" + currentUID,
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
       });
     }).catch(function(error) {
       console.error("プロフィール画像のアップロードに失敗:", error);
