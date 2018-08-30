@@ -209,16 +209,32 @@
     </section><!-- /#chat -->
 
 
-    <!-- Firebaseのセットアップコード（以下のSDKのバージョンは3.2.1） -->
-    <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+    <!-- Firebaseのセットアップコード（以下のSDKのバージョンは5.4.1） -->
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-storage.js"></script>
+    <!-- apiKeyなどは、ご自身の環境のものに合わせてください -->
     <script>
       // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCD0M5n6xAVKa_rQYgOtFX2Rz91E7cmzpw",
+        authDomain: "realtime-chat-257ac.firebaseapp.com",
+        databaseURL: "https://realtime-chat-257ac.firebaseio.com",
+        projectId: "realtime-chat-257ac",
+        storageBucket: "realtime-chat-257ac.appspot.com",
+        messagingSenderId: "517996278749"
+      };
+      /*
       var config = {
         apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         authDomain: "realtime-chat-xxxxx.firebaseapp.com",
         databaseURL: "https://realtime-chat-xxxxx.firebaseio.com",
+        projectId: "realtime-chat-xxxxx",
         storageBucket: "realtime-chat-xxxxx.appspot.com",
+        messagingSenderId: "xxxxxxxxxxxx"
       };
+      */
       firebase.initializeApp(config);
     </script>
 
