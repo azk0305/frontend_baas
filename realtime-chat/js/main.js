@@ -481,12 +481,12 @@ $(document).ready(function() {
   setMessageListMinHeight();
 
   $(".comment-form").submit(function() {
-    $text = $(".comment-form__text");
-    var comment = $text.val();
+    var commentForm = $(".comment-form__text");
+    var comment = commentForm.val();
     if (comment === "") {
       return false;
     }
-    $text.val("");
+    commentForm.val("");
 
     // TODO: メッセージを投稿する
     var message = {
